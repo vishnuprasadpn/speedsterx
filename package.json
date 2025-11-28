@@ -1,0 +1,48 @@
+{
+  "name": "speedsterx",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:cleanup-demo": "tsx prisma/cleanup-demo-products.ts",
+    "db:update-admin-email": "tsx prisma/update-admin-email.ts",
+    "db:reset-passwords": "tsx prisma/reset-passwords.ts",
+    "db:list-users": "tsx prisma/list-users.ts",
+    "db:update-manager-email": "tsx prisma/update-manager-email.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.20",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.555.0",
+    "next": "^15.1.3",
+    "next-auth": "^5.0.0-beta.25",
+    "postcss": "^8.4.49",
+    "prisma": "^5.22.0",
+    "razorpay": "^2.9.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}
