@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductFilters } from "@/components/product-filters";
 
+// Revalidate shop page every 30 seconds
+export const revalidate = 30;
+
 interface SearchParams {
   category?: string;
   minPrice?: string;
@@ -54,13 +57,12 @@ export default async function ShopPage({
     where.type = params.type;
   }
 
-  // Get accessories category ID
-  const accessoriesCategory = await prisma.category.findUnique({
-    where: { slug: "accessories" },
-    select: { id: true },
-  });
-
-  const [allProducts, total, categories] = await Promise.all([
+  // Get accessories category ID and data in parallel
+  const [accessoriesCategory, allProducts, total, categories] = await Promise.all([
+    prisma.category.findUnique({
+      where: { slug: "accessories" },
+      select: { id: true },
+    }),
     prisma.product.findMany({
       where,
       include: {
@@ -68,9 +70,13 @@ export default async function ShopPage({
           orderBy: { sortOrder: "asc" },
           take: 1,
         },
-        category: true,
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
       },
       orderBy: { createdAt: "desc" },
+      // Fetch more to account for sorting (accessories last)
+      take: Math.min(perPage * 2, 100), // Limit to prevent huge queries
     }),
     prisma.product.count({ where }),
     prisma.category.findMany({

@@ -4,21 +4,28 @@ import { Plus, Package } from "lucide-react";
 import { ProductsList } from "@/components/admin/products-list";
 
 export default async function AdminProductsPage() {
-  // Get accessories category ID
-  const accessoriesCategory = await prisma.category.findUnique({
-    where: { slug: "accessories" },
-    select: { id: true },
-  });
-
-  const allProducts = await prisma.product.findMany({
-    include: {
-      category: true,
-      images: {
-        take: 1,
+  // Get accessories category ID and products in parallel
+  const [accessoriesCategory, allProducts, categories] = await Promise.all([
+    prisma.category.findUnique({
+      where: { slug: "accessories" },
+      select: { id: true },
+    }),
+    prisma.product.findMany({
+      include: {
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+        images: {
+          take: 1,
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   // Sort: accessories last
   const products = allProducts.sort((a, b) => {
@@ -27,11 +34,6 @@ export default async function AdminProductsPage() {
     if (aIsAccessory && !bIsAccessory) return 1;
     if (!aIsAccessory && bIsAccessory) return -1;
     return 0;
-  });
-
-  const categories = await prisma.category.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
   });
 
   // Convert Decimal to number for client components

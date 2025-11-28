@@ -4,26 +4,33 @@ import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { HeroCarousel } from "@/components/hero-carousel";
 
+// Revalidate homepage every 60 seconds
+export const revalidate = 60;
+
 export default async function HomePage() {
   try {
-    // Get accessories category ID
-    const accessoriesCategory = await prisma.category.findUnique({
-      where: { slug: "accessories" },
-      select: { id: true },
-    });
-
-    // Fetch this week's special product (newest non-accessory product)
-    const allProducts = await prisma.product.findMany({
-      where: { isActive: true },
-      include: {
-        images: {
-          orderBy: { sortOrder: "asc" },
-          take: 1,
+    // Get accessories category ID and products in parallel
+    const [accessoriesCategory, allProducts] = await Promise.all([
+      prisma.category.findUnique({
+        where: { slug: "accessories" },
+        select: { id: true },
+      }),
+      // Limit to 20 products for homepage (enough for featured + special)
+      prisma.product.findMany({
+        where: { isActive: true },
+        include: {
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+          },
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
         },
-        category: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        take: 20, // Limit to improve performance
+      }),
+    ]);
 
   // Sort: accessories last
   const sortedProducts = allProducts.sort((a, b) => {
@@ -41,11 +48,9 @@ export default async function HomePage() {
     : null;
 
   // Fetch featured products (excluding accessories, max 8)
-  const featuredProducts = sortedProducts.length > 0
-    ? sortedProducts
-        .filter(p => !accessoriesCategory || p.categoryId !== accessoriesCategory.id)
-        .slice(0, 8)
-    : [];
+  const featuredProducts = sortedProducts
+    .filter(p => !accessoriesCategory || p.categoryId !== accessoriesCategory.id)
+    .slice(0, 8);
 
 
   return (
