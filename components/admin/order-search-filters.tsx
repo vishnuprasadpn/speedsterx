@@ -132,10 +132,11 @@ export function OrderSearchFilters({
               >
                 <option value="all">All Status</option>
                 <option value="PENDING">Pending</option>
-                <option value="PROCESSING">Processing</option>
+                <option value="PAID">Paid</option>
                 <option value="SHIPPED">Shipped</option>
-                <option value="DELIVERED">Delivered</option>
+                <option value="COMPLETED">Completed</option>
                 <option value="CANCELLED">Cancelled</option>
+                <option value="REFUNDED">Refunded</option>
               </select>
             </div>
 

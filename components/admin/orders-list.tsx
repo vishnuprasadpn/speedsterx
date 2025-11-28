@@ -89,14 +89,16 @@ export function OrdersList({ orders }: OrdersListProps) {
                     <td className="p-4">
                       <span
                         className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                          order.status === "DELIVERED"
+                          order.status === "COMPLETED"
                             ? "bg-green-500/20 text-green-400 border border-green-500/30"
                             : order.status === "SHIPPED"
                             ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                            : order.status === "PROCESSING"
+                            : order.status === "PAID"
                             ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
                             : order.status === "PENDING"
                             ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                            : order.status === "REFUNDED"
+                            ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                             : "bg-red-500/20 text-red-400 border border-red-500/30"
                         }`}
                       >
