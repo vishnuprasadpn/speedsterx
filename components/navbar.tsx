@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { ShoppingCart, User, Menu } from "lucide-react";
 import { useState } from "react";
+import { useCart } from "@/contexts/cart-context";
 
 export function Navbar() {
   const { data: session } = useSession();
+  const { cartCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -43,9 +45,11 @@ export function Navbar() {
               className="relative p-2 hover:bg-slate-800 rounded-full transition-colors"
             >
               <ShoppingCart className="h-5 w-5 text-slate-300" />
-              <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-white text-xs rounded-full flex items-center justify-center">
-                0
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </Link>
 
             {session ? (

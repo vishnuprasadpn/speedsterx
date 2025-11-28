@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
+import { useCart } from "@/contexts/cart-context";
 
 interface AddToCartButtonProps {
   productId: string;
@@ -12,7 +13,9 @@ interface AddToCartButtonProps {
 export function AddToCartButton({ productId, disabled }: AddToCartButtonProps) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { data: session } = useSession();
+  const { refreshCart } = useCart();
 
   const handleAddToCart = async () => {
     if (!session) {
@@ -29,10 +32,12 @@ export function AddToCartButton({ productId, disabled }: AddToCartButtonProps) {
       });
 
       if (response.ok) {
-        // Show success message (you can add a toast notification here)
-        alert("Added to cart!");
+        setSuccess(true);
+        refreshCart(); // Update cart count in navbar
+        setTimeout(() => setSuccess(false), 2000);
       } else {
-        alert("Failed to add to cart");
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to add to cart");
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -76,10 +81,23 @@ export function AddToCartButton({ productId, disabled }: AddToCartButtonProps) {
       <button
         onClick={handleAddToCart}
         disabled={disabled || loading}
-        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors font-semibold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full py-3 rounded-lg transition-all font-semibold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+          success
+            ? "bg-green-500 text-white"
+            : "bg-primary text-white hover:bg-primary/90"
+        }`}
       >
-        <ShoppingCart className="h-5 w-5" />
-        <span>{loading ? "Adding..." : "Add to Cart"}</span>
+        {success ? (
+          <>
+            <Check className="h-5 w-5" />
+            <span>Added!</span>
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="h-5 w-5" />
+            <span>{loading ? "Adding..." : "Add to Cart"}</span>
+          </>
+        )}
       </button>
     </div>
   );
