@@ -6,13 +6,14 @@ import { Search, Filter, X } from "lucide-react";
 interface Product {
   id: string;
   name: string;
+  slug: string;
   brand: string | null;
   category: { name: string; slug: string };
   price: number;
   salePrice: number | null;
   stock: number;
   isActive: boolean;
-  images: any[];
+  images: { url: string }[];
 }
 
 interface Category {

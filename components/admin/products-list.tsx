@@ -39,7 +39,7 @@ export function ProductsList({ products, categories }: ProductsListProps) {
       <ProductSearchFilters
         products={products}
         categories={categories}
-        onFiltered={setFilteredProducts}
+        onFiltered={(filtered) => setFilteredProducts(filtered)}
       />
 
       {/* Products Table */}

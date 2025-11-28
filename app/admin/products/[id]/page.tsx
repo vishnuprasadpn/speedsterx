@@ -43,7 +43,14 @@ export default async function AdminProductEditPage({
         <p className="text-slate-400">Update product details and manage images</p>
       </div>
 
-      <ProductEditForm product={product} categories={categories} />
+      <ProductEditForm 
+        product={{
+          ...product,
+          price: Number(product.price),
+          salePrice: product.salePrice ? Number(product.salePrice) : null,
+        }} 
+        categories={categories} 
+      />
     </div>
   );
 }

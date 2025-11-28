@@ -22,10 +22,11 @@ export default async function AdminOrdersPage() {
 
   const statusCounts = {
     PENDING: ordersData.filter((o) => o.status === "PENDING").length,
-    PROCESSING: ordersData.filter((o) => o.status === "PROCESSING").length,
+    PAID: ordersData.filter((o) => o.status === "PAID").length,
     SHIPPED: ordersData.filter((o) => o.status === "SHIPPED").length,
-    DELIVERED: ordersData.filter((o) => o.status === "DELIVERED").length,
+    COMPLETED: ordersData.filter((o) => o.status === "COMPLETED").length,
     CANCELLED: ordersData.filter((o) => o.status === "CANCELLED").length,
+    REFUNDED: ordersData.filter((o) => o.status === "REFUNDED").length,
   };
 
   // Convert Decimal to number for client components
@@ -51,8 +52,14 @@ export default async function AdminOrdersPage() {
             <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-medium border border-orange-500/30">
               {statusCounts.PENDING} Pending
             </span>
+            <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
+              {statusCounts.PAID} Paid
+            </span>
             <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium border border-blue-500/30">
-              {statusCounts.PROCESSING} Processing
+              {statusCounts.SHIPPED} Shipped
+            </span>
+            <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium border border-purple-500/30">
+              {statusCounts.COMPLETED} Completed
             </span>
           </div>
         </div>

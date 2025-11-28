@@ -71,7 +71,13 @@ export async function POST(
     }
 
     const uploadedImages = [];
+    
+    // Get max sortOrder once before the loop
+    const maxSortOrder = product.images.length > 0
+      ? Math.max(...product.images.map((img) => img.sortOrder))
+      : -1;
 
+    let imageIndex = 0;
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
         continue;
@@ -89,22 +95,18 @@ export async function POST(
       const buffer = Buffer.from(bytes);
       await writeFile(filepath, buffer);
 
-      // Get max sortOrder
-      const maxSortOrder = product.images.length > 0
-        ? Math.max(...product.images.map((img) => img.sortOrder))
-        : -1;
-
       // Create image record
       const image = await prisma.productImage.create({
         data: {
           productId: id,
           url: `/uploads/products/${filename}`,
           altText: product.name,
-          sortOrder: maxSortOrder + uploadedImages.length + 1,
+          sortOrder: maxSortOrder + imageIndex + 1,
         },
       });
 
       uploadedImages.push(image);
+      imageIndex++;
     }
 
     return NextResponse.json({ images: uploadedImages }, { status: 201 });
