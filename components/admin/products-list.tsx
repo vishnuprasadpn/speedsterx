@@ -65,7 +65,17 @@ export function ProductsList({ products, categories }: ProductsListProps) {
               </thead>
               <tbody className="divide-y divide-slate-700">
                 {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-slate-900/30 transition-colors">
+                  <tr 
+                    key={product.id} 
+                    className="hover:bg-slate-900/30 transition-colors cursor-pointer"
+                    onClick={(e) => {
+                      // Don't navigate if clicking on action buttons
+                      if ((e.target as HTMLElement).closest('a, button')) {
+                        return;
+                      }
+                      window.location.href = `/admin/products/${product.id}`;
+                    }}
+                  >
                     <td className="p-4">
                       <div className="flex items-center space-x-4">
                         {product.images[0] ? (
@@ -86,6 +96,7 @@ export function ProductsList({ products, categories }: ProductsListProps) {
                           <Link
                             href={`/admin/products/${product.id}`}
                             className="font-semibold text-white hover:text-primary transition-colors block truncate"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {product.name}
                           </Link>
@@ -141,7 +152,7 @@ export function ProductsList({ products, categories }: ProductsListProps) {
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-3" onClick={(e) => e.stopPropagation()}>
                         <Link
                           href={`/product/${product.slug}`}
                           target="_blank"

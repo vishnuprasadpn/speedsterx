@@ -296,6 +296,31 @@ export function ProductEditForm({ product, categories }: ProductEditFormProps) {
     }
   };
 
+  const handleDeleteProduct = async () => {
+    if (!confirm(`Are you sure you want to delete "${product.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    if (!confirm("This will permanently delete the product. Are you absolutely sure?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/products/${product.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete product");
+      }
+
+      router.push("/admin/products");
+    } catch (error: any) {
+      setUploadError(error.message || "Failed to delete product");
+    }
+  };
+
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [imageAltText, setImageAltText] = useState("");
@@ -701,31 +726,41 @@ export function ProductEditForm({ product, categories }: ProductEditFormProps) {
         </div>
 
         {/* Submit Button */}
-        <div className="flex items-center justify-end space-x-4 pt-6 border-t border-slate-700">
+        <div className="flex items-center justify-between pt-6 border-t border-slate-700">
           <button
             type="button"
-            onClick={() => router.back()}
-            className="px-6 py-3 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors font-medium"
+            onClick={handleDeleteProduct}
+            className="flex items-center space-x-2 px-6 py-3 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors font-medium"
           >
-            Cancel
+            <Trash2 className="h-5 w-5" />
+            <span>Delete Product</span>
           </button>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="flex items-center space-x-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Save className="h-5 w-5" />
-                <span>Save Changes</span>
-              </>
-            )}
-          </button>
+          <div className="flex items-center space-x-4">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-6 py-3 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex items-center space-x-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5" />
+                  <span>Save Changes</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>

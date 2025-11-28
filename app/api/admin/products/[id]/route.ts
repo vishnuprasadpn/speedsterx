@@ -46,3 +46,56 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session || !isAdminOrManager(session.user.role)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    // Check if product exists
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: true,
+        orderItems: true,
+      },
+    });
+
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Check if product is in any orders
+    if (product.orderItems.length > 0) {
+      return NextResponse.json(
+        { error: "Cannot delete product that has been ordered. Deactivate it instead." },
+        { status: 400 }
+      );
+    }
+
+    // Delete product images (files will remain, but records will be deleted)
+    await prisma.productImage.deleteMany({
+      where: { productId: id },
+    });
+
+    // Delete the product
+    await prisma.product.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Product deleted successfully" });
+  } catch (error: any) {
+    console.error("Product delete error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to delete product" },
+      { status: 500 }
+    );
+  }
+}
+

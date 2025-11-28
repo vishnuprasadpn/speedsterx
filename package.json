@@ -14,11 +14,8 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "db:cleanup-demo": "tsx prisma/cleanup-demo-products.ts",
-    "db:update-admin-email": "tsx prisma/update-admin-email.ts",
     "db:reset-passwords": "tsx prisma/reset-passwords.ts",
-    "db:list-users": "tsx prisma/list-users.ts",
-    "db:update-manager-email": "tsx prisma/update-manager-email.ts"
+    "db:list-users": "tsx prisma/list-users.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
