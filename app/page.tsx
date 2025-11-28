@@ -5,24 +5,25 @@ import Image from "next/image";
 import { HeroCarousel } from "@/components/hero-carousel";
 
 export default async function HomePage() {
-  // Get accessories category ID
-  const accessoriesCategory = await prisma.category.findUnique({
-    where: { slug: "accessories" },
-    select: { id: true },
-  });
+  try {
+    // Get accessories category ID
+    const accessoriesCategory = await prisma.category.findUnique({
+      where: { slug: "accessories" },
+      select: { id: true },
+    });
 
-  // Fetch this week's special product (newest non-accessory product)
-  const allProducts = await prisma.product.findMany({
-    where: { isActive: true },
-    include: {
-      images: {
-        orderBy: { sortOrder: "asc" },
-        take: 1,
+    // Fetch this week's special product (newest non-accessory product)
+    const allProducts = await prisma.product.findMany({
+      where: { isActive: true },
+      include: {
+        images: {
+          orderBy: { sortOrder: "asc" },
+          take: 1,
+        },
+        category: true,
       },
-      category: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
 
   // Sort: accessories last
   const sortedProducts = allProducts.sort((a, b) => {
@@ -33,14 +34,18 @@ export default async function HomePage() {
     return 0;
   });
 
-  const thisWeeksSpecial = sortedProducts.find(p => 
-    accessoriesCategory && p.categoryId !== accessoriesCategory.id
-  ) || sortedProducts[0];
+  const thisWeeksSpecial = sortedProducts.length > 0 
+    ? (sortedProducts.find(p => 
+        accessoriesCategory && p.categoryId !== accessoriesCategory.id
+      ) || sortedProducts[0])
+    : null;
 
   // Fetch featured products (excluding accessories, max 8)
-  const featuredProducts = sortedProducts
-    .filter(p => !accessoriesCategory || p.categoryId !== accessoriesCategory.id)
-    .slice(0, 8);
+  const featuredProducts = sortedProducts.length > 0
+    ? sortedProducts
+        .filter(p => !accessoriesCategory || p.categoryId !== accessoriesCategory.id)
+        .slice(0, 8)
+    : [];
 
 
   return (
@@ -296,5 +301,17 @@ export default async function HomePage() {
       </div>
     </div>
   );
+  } catch (error: any) {
+    console.error("Homepage error:", error);
+    // Return a fallback page if there's an error
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Something went wrong</h1>
+          <p className="text-slate-400">Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
 }
 

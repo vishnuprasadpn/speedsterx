@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
@@ -32,6 +33,7 @@ interface ProductsListProps {
 }
 
 export function ProductsList({ products, categories }: ProductsListProps) {
+  const router = useRouter();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
   return (
@@ -73,7 +75,7 @@ export function ProductsList({ products, categories }: ProductsListProps) {
                       if ((e.target as HTMLElement).closest('a, button')) {
                         return;
                       }
-                      window.location.href = `/admin/products/${product.id}`;
+                      router.push(`/admin/products/${product.id}`);
                     }}
                   >
                     <td className="p-4">
