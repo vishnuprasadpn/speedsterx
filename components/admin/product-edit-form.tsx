@@ -54,6 +54,23 @@ interface ProductEditFormProps {
 }
 
 export function ProductEditForm({ product, categories }: ProductEditFormProps) {
+  // Validate props
+  if (!product) {
+    return (
+      <div className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
+        Error: Product data not found
+      </div>
+    );
+  }
+
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 px-4 py-3 rounded-lg">
+        Warning: No categories available. Please create categories first.
+      </div>
+    );
+  }
+
   // Get available product types based on category
   const getAvailableTypesForCategory = (categoryId: string): { value: string; label: string }[] => {
     // Find category by ID
